@@ -1,0 +1,42 @@
+{
+  "name": "vue-node-js",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "nodemon server/index.js",
+    "db-create-users": "npx sequelize-cli model:generate --name users --attributes userName:string,password:string,cryptoWalletAddress:string",
+    "db-create-compaigns": "npx sequelize-cli model:generate --name compaigns --attributes name:string,description:string,amount:integer,goalAmount:integer,expiresIn:date,status:string,user_id:integer",
+    "db-create-donations": "npx sequelize-cli model:generate --name donations --attributes compaignName:string,amount:integer",
+    "migrate": "npx sequelize-cli db:migrate",
+    "db-up": "npx sequelize-cli db:seed:all",
+    "db-down": "npx sequelize-cli db:seed:undo"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "body-parser": "^1.19.1",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "cron": "^2.1.0",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.2",
+    "express-validator": "^6.14.0",
+    "ioredis": "^5.2.4",
+    "jsonwebtoken": "^8.5.1",
+    "multer": "^1.4.4",
+    "mysql2": "^2.3.3",
+    "node-cache": "^5.1.2",
+    "sequelize": "^6.27.0",
+    "sequelize-transparent-cache": "^2.3.0",
+    "sequelize-transparent-cache-ioredis": "^2.3.0",
+    "sqlite3": "^5.1.4"
+  },
+  "devDependencies": {
+    "node-env-run": "^4.0.2",
+    "nodemon": "^2.0.15"
+  }
+}
