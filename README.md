@@ -1,12 +1,10 @@
 [![Express Logo](https://i.cloudup.com/zfY6lL7eFa-3000x3000.png)](http://expressjs.com/)
 
-# Crowdfunding test-app
+# Crowdfunding app
 
-Express Js sample example based CRUD app
+Express Js Crowdfunding test application 
 
 ## Description
-
-Used Prettier to make code cleaner and also used express-validator library to validate requests.
 
 For database used **MYSQL** with **Sequelize**.
 
