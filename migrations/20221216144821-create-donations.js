@@ -2,36 +2,23 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('compaigns', {
+    await queryInterface.createTable('donations', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      name: {
-        type: Sequelize.TEXT,
-        unique: {
-        args: true,
-        msg: 'Name already in use!'
-      }
+      donatorName: {
+        type: Sequelize.STRING
       },
-      description: {
+      compaignName: {
+        type: Sequelize.STRING
+      },
+      cryptoCurrencyWallet: {
         type: Sequelize.STRING
       },
       amount: {
-        type: Sequelize.INTEGER
-      },
-      goalAmount: {
-        type: Sequelize.INTEGER
-      },
-      expiresIn: {
-        type: Sequelize.DATE
-      },
-      status: {
-        type: Sequelize.STRING
-      },
-      user_id: {
         type: Sequelize.INTEGER
       },
       createdAt: {
@@ -45,6 +32,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('compaigns');
+    await queryInterface.dropTable('donations');
   }
 };

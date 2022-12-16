@@ -5,110 +5,127 @@ const { verifyToken } = require("../common/token");
 const status = require('./status');
 
 class CompaignService extends BaseService {
-    constructor() {
-        super();
+  constructor() {
+    super();
+  }
+
+  async create(req) {
+    try {
+
+      const errors = this.handleErrors(req);
+
+      if (errors.hasErrors) {
+        return errors.body;
       }
-    
-    async create(req) {
-        try {
 
-            const errors = this.handleErrors(req);
+      const { name, description, goalAmount, expiresIn } = req.body;
 
-            if(errors.hasErrors) {
-                return errors.body;
-            }
+      const token =
+        req?.cookies?.accessToken ||
+        req?.headers?.authorization?.split(" ")[1] ||
+        null;
 
-            const { name, description, goalAmount, expiresIn } = req.body;
+      const user = verifyToken({
+        token,
+        secret: process.env.JWT_SECRET
+      });
 
-            const token =
-                req?.cookies?.accessToken ||
-                req?.headers?.authorization?.split(" ")[1] ||
-                null;
-            
-            const user = verifyToken({
-                token,
-                secret: process.env.JWT_SECRET
-            });
+      let userId;
+      if (user) {
+        userId = await users.findOne({
+          where: { username: user.username }
+        })
+      }
 
-            let userId;
-            if (user) {
-                userId = await users.findOne({
-                    where: {username: user.username}
-                })
-            }
+      const cachedCompaigns = this.cachingService.getValue('activeCompaigns');
 
-            const compaign = await compaignModel.create({
-                name,
-                description,
-                amount: 0,
-                goalAmount,
-                expiresIn,
-                user_id: userId.dataValues.id,
-                status: status.active
-            });
+      const unique = cachedCompaigns
+        ? cachedCompaigns.some(({ name: eName }) => eName === name)
+        : !!(await compaignModel.findOne({ where: { name: name } }))
 
-            const cachedCompaigns = this.cachingService.getValue('activeCompaigns'); 
-            this.cachingService.setValue({ key: 'activeCompaigns', value: cachedCompaigns }); 
-            
-            return this.response({
-                statusCode: 201,
-                data: compaign
-            })
-        } catch (error) {
-            console.log(error, 'error')
-            return this.serverErrorResponse(error);
-        }
+      if (unique)
+        return this.response({
+          status: false,
+          statusCode: 400,
+          message: "Duplicated compaign name"
+        })
+
+      const compaign = await compaignModel.create({
+        name,
+        description,
+        amount: 0,
+        goalAmount,
+        expiresIn,
+        user_id: userId.dataValues.id,
+        status: status.active
+      });
+
+      this.refreshCache(compaign)
+
+      return this.response({
+        statusCode: 201,
+        data: compaign
+      })
+    } catch (error) {
+      return this.serverErrorResponse(error);
     }
+  }
 
-    async findAllActiveCompaigns() {
-        try {
+  async findAllActiveCompaigns() {
+    try {
 
-            const cachedCompaigns = this.cachingService.getValue('activeCompaigns');
+      const cachedCompaigns = this.cachingService.getValue('activeCompaigns');
 
-            if (cachedCompaigns) {
-                const data = cachedCompaigns.map(({ id, name, description, goalAmount, expiresIn, status}) => {
-                    return {
-                        id,
-                        name,
-                        description,
-                        goalAmount,
-                        expiresIn: new Date(expiresIn).toLocaleDateString(),
-                        status
-                    }
-                })
+      if (cachedCompaigns) {
+        const data = cachedCompaigns.map(({ id, name, description, goalAmount, expiresIn, status }) => {
+          return {
+            id,
+            name,
+            description,
+            goalAmount,
+            expiresIn: new Date(expiresIn).toLocaleDateString(),
+            status
+          }
+        })
 
-                return this.response({
-                    data
-                })   
-            } 
+        return this.response({
+          data
+        })
+      }
 
-            const activeCompaigns = await compaignModel.findAll({
-                where: {
-                    status: status.active
-                }
-            });  
-            
-            this.cachingService.setValue({ key: 'activeCompaigns', value: activeCompaigns }); 
-            
-            const data = activeCompaigns.map(({ id, name, description, goalAmount, expiresIn, status}) => {
-                return {
-                    id,
-                    name,
-                    description,
-                    goalAmount,
-                    expiresIn: new Date(expiresIn).toLocaleDateString(),
-                    status
-                }
-            })
-
-            return this.response({
-                data
-            })
-        } catch (error) {
-          console.log(error)
-            return this.serverErrorResponse(error);
+      const activeCompaigns = await compaignModel.findAll({
+        where: {
+          status: status.active
         }
+      });
+
+      this.cachingService.setValue({ key: 'activeCompaigns', value: activeCompaigns });
+
+      const data = activeCompaigns.map(({ id, name, description, goalAmount, expiresIn, status }) => {
+        return {
+          id,
+          name,
+          description,
+          goalAmount,
+          expiresIn: new Date(expiresIn).toLocaleDateString(),
+          status
+        }
+      })
+
+      return this.response({
+        data
+      })
+    } catch (error) {
+      return this.serverErrorResponse(error);
     }
+  }
+
+  refreshCache(newValue) {
+    const cachedCompaigns = this.cachingService.getValue('activeCompaigns');
+
+    if (cachedCompaigns)
+      this.cachingService.setValue({ key: 'activeCompaigns', value: [...cachedCompaigns, newValue] });
+  }
 }
 
 module.exports = CompaignService;

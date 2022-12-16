@@ -1,5 +1,5 @@
 {
-  "name": "vue-node-js",
+  "name": "react-node-js",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
@@ -7,7 +7,7 @@
     "dev": "nodemon server/index.js",
     "db-create-users": "npx sequelize-cli model:generate --name users --attributes userName:string,password:string,cryptoWalletAddress:string",
     "db-create-compaigns": "npx sequelize-cli model:generate --name compaigns --attributes name:string,description:string,amount:integer,goalAmount:integer,expiresIn:date,status:string,user_id:integer",
-    "db-create-donations": "npx sequelize-cli model:generate --name donations --attributes compaignName:string,amount:integer",
+    "db-create-donations": "npx sequelize-cli model:generate --name donations --attributes donatorName:string,compaignName:string,cryptoCurrencyWallet:string,amount:integer",
     "migrate": "npx sequelize-cli db:migrate",
     "db-up": "npx sequelize-cli db:seed:all",
     "db-down": "npx sequelize-cli db:seed:undo"

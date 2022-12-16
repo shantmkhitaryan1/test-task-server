@@ -12,6 +12,7 @@ const port = process.env.PORT || 8000;
 const authRoutes = require("./routes/authRoutes");
 const compaignRoutes = require("./routes/compaignRoutes");
 const donateRoutes = require("./routes/donateRoutes");
+const fraudRoutes = require("./routes/fraudRoute");
 
 // ----------------------------------------
 
@@ -35,12 +36,7 @@ app.use(
 app.use("/api/auth", authRoutes);
 app.use("/api/compaign", compaignRoutes);
 app.use("/api/donate", donateRoutes);
-
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(__dirname + '/dist/'));
-
-  app.get(/.*/, (req, res) => res.sendFile(__dirname + '/dist/index.html'));
-}
+app.use("/api/fraud", fraudRoutes);
 
 // listen port
 app.listen(port, () => console.log(`Server started on port ${port}`));

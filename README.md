@@ -53,3 +53,12 @@ Starting point "localhost:8000"
  + User sign-in - POST /api/auth/sign-in
 
  + Donations - POST /api/donate
+
+ + Fraud Compaign - GET /api/fraud
+
+ ## Users credentials
+
+ username-test1, password-12345
+ username-test2, password-123456
+ username-test3, password-1234567
+ username-test4, password-12345678
