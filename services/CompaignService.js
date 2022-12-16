@@ -19,6 +19,7 @@ class CompaignService extends BaseService {
             }
 
             const { name, description, goalAmount, expiresIn } = req.body;
+
             const token =
                 req?.cookies?.accessToken ||
                 req?.headers?.authorization?.split(" ")[1] ||
@@ -47,7 +48,7 @@ class CompaignService extends BaseService {
             });
 
             const cachedCompaigns = this.cachingService.getValue('activeCompaigns'); 
-            this.cachingService.setValue({ key: 'activeCompaigns', value: [...cachedCompaigns, compaign] }); 
+            this.cachingService.setValue({ key: 'activeCompaigns', value: cachedCompaigns }); 
             
             return this.response({
                 statusCode: 201,
@@ -62,7 +63,7 @@ class CompaignService extends BaseService {
     async findAllActiveCompaigns() {
         try {
 
-            const cachedCompaigns = this.cachingService.getValue('activeCompaigns') 
+            const cachedCompaigns = this.cachingService.getValue('activeCompaigns');
 
             if (cachedCompaigns) {
                 const data = cachedCompaigns.map(({ id, name, description, goalAmount, expiresIn, status}) => {
@@ -87,7 +88,7 @@ class CompaignService extends BaseService {
                 }
             });  
             
-            this.cachingService.setValue({ key: 'activeCompaigns', value: activeCompaigns }) 
+            this.cachingService.setValue({ key: 'activeCompaigns', value: activeCompaigns }); 
             
             const data = activeCompaigns.map(({ id, name, description, goalAmount, expiresIn, status}) => {
                 return {

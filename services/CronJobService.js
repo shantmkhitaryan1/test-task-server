@@ -6,7 +6,11 @@ const job = new CronJob(
 	'*/10 * * * * *',
 	async function () {
 		
-		const compaigns = await compaignModel.findAll();
+		const compaigns = await compaignModel.findAll({
+			where: {
+				status: status.active
+			}
+		});
 		
 		const now = new Date(new Date().getTime() - new Date().getTimezoneOffset() * 60000);
 

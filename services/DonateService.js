@@ -13,10 +13,19 @@ class DonateService extends BaseService {
         try {
             const { goalAmount, compaignId } = req.body;
 
-            if (compaignId) {
-                const compaign = await compaignModel.findByPk(compaignId);
+            const cachedCompaign = this.cachingService.getValue('compaign');
 
-                if (!compaign) {
+            if (compaignId) {
+                let compaign;
+                if (cachedCompaign) {
+                    compaign = cachedCompaign;
+                } else {
+                    compaign = await compaignModel.findByPk(compaignId);
+
+                    this.cachingService.setValue({ key: 'compaign', value: compaign }); 
+                }
+
+                if (!compaign || (compaign.dataValues.status !== status.active)) {
                     return this.response({
                         status: false,
                         statusCode: 400,
