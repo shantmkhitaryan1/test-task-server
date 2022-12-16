@@ -46,8 +46,8 @@ class CompaignService extends BaseService {
                 status: status.active
             });
 
-            const cachedCompaigns = this.cachingService.getValue('activeCompaigns') 
-            this.cachingService.setValue({ key: 'activeCompaigns', value: [...cachedCompaigns, compaign] }) 
+            const cachedCompaigns = this.cachingService.getValue('activeCompaigns'); 
+            this.cachingService.setValue({ key: 'activeCompaigns', value: [...cachedCompaigns, compaign] }); 
             
             return this.response({
                 statusCode: 201,
