@@ -11,6 +11,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      compaigns.hasMany(models.donations, {
+        foreignKey: "compaign_id",
+        as: 'compaign'
+      })
     }
   }
   compaigns.init({

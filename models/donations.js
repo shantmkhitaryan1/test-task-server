@@ -17,7 +17,9 @@ module.exports = (sequelize, DataTypes) => {
     donatorName: DataTypes.STRING,
     compaignName: DataTypes.STRING,
     cryptoCurrencyWallet: DataTypes.STRING,
-    amount: DataTypes.INTEGER
+    amount: DataTypes.INTEGER,
+    status: DataTypes.STRING,
+    compaign_id: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'donations',

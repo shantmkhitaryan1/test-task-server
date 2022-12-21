@@ -1,5 +1,6 @@
 const BaseService = require("./BaseService");
 const { compaigns: compaignModel } = require("../models/index");
+const { donations: donationModel } = require("../models/index");
 const status = require("./status");
 
 class FraudService extends BaseService {
@@ -20,7 +21,7 @@ class FraudService extends BaseService {
           message: "Compaign not found",
         });
       }
-
+     
       if (compaign.dataValues.status === status.fraud) {
         return this.response({
           status: false,
@@ -28,15 +29,25 @@ class FraudService extends BaseService {
           message: "Compaign already marked as fraud",
         });
       }
-
-      await compaignModel.update(
-        { status: status.fraud },
+      
+        await compaignModel.update(
+          { status: status.fraud },
+          {
+            where: {
+              id: compaignId,
+            },
+          }
+        );
+     
+      await donationModel.update(
+        { status: status.invalid },
         {
           where: {
-            id: compaignId,
-          },
+            compaign_id: compaign.dataValues.id
+          }
         }
-      );
+        )  
+      
 
       return this.response({
         statusCode: 200,

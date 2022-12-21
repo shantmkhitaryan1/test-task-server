@@ -4,7 +4,7 @@ class AuthenticationController {
 
   constructor() {
     this.authService = new AuthService()
-  }ey
+  }
 
   async signIn(req, res) {
     const data = await this.authService.signIn(req);

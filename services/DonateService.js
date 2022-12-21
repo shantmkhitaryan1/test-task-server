@@ -13,17 +13,8 @@ class DonateService extends BaseService {
     try {
       const { goalAmount, compaignId, donatorName, address } = req.body;
 
-      const cachedCompaign = this.cachingService.getValue('compaign');
-
       if (compaignId) {
-        let compaign;
-        if (cachedCompaign) {
-          compaign = cachedCompaign;
-        } else {
-          compaign = await compaignModel.findByPk(compaignId);
-
-          this.cachingService.setValue({ key: 'compaign', value: compaign });
-        }
+        let compaign = await compaignModel.findByPk(compaignId);
 
         if (!compaign || (compaign.dataValues.status !== status.active)) {
           return this.response({
@@ -47,22 +38,27 @@ class DonateService extends BaseService {
             id: compaignId
           }
         });
-
+        
+        compaign = await compaignModel.findByPk(compaignId);
+        
         if (compaign.amount >= compaign.goalAmount) {
           compaign.status = status.successful;
+          await compaign.save()
         }
 
         await donationModel.create({
           compaignName: compaign.name,
           cryptoCurrencyWallet: address,
           amount: goalAmount,
+          status: status.valid,
+          compaign_id: compaignId,
           donatorName
         });
 
         return this.response({
           data: {
             compaign: {
-              id: compaign.id,
+              id: compaignId,
               name: compaign.name,
               description: compaign.description,
               amount: compaign.amount,

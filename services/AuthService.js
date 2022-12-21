@@ -46,7 +46,7 @@ module.exports = class AuthService extends BaseService {
       return this.response({
         statusCode: 400,
         status: false,
-        message: 'Incorrect username and/or  password'
+        message: 'Incorrect username and/or password'
       });
 
     } catch(error) {
